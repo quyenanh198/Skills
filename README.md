@@ -20,8 +20,21 @@ All three manifests point at the same `skills/` directory — no content is dupl
 
 | Skill | Description |
 |---|---|
+| [`canvas-design`](skills/canvas-design/SKILL.md) | Creates visual art/posters as .png or .pdf from a design philosophy. |
+| [`learn`](skills/learn/SKILL.md) | Teaches concepts for understanding, not task completion — explanations, ELI5, quizzing. |
+| [`skill-creator`](skills/skill-creator/SKILL.md) | Creates and iteratively improves other skills, including running evals. |
+| [`morning`](skills/morning/SKILL.md) | Renders a personal morning brief as a styled HTML artifact. |
+| [`notebooklm`](skills/notebooklm/SKILL.md) | Drives NotebookLM via browser automation (reading, adding sources, Studio outputs). |
+| [`spy-entry-analysis`](skills/spy-entry-analysis/SKILL.md) | Multi-timeframe technical analysis for $SPY entry points. |
+| [`webnovel-planning`](skills/webnovel-planning/SKILL.md) | Plans webnovel structure, world-building, and characters. |
+| [`webnovel-writer`](skills/webnovel-writer/SKILL.md) | Writes full webnovel chapters from planning documents. |
+| [`skill-core-webnovel-writing`](skills/skill-core-webnovel-writing/SKILL.md) | Core webnovel prose-writing fundamentals and rules. |
 | [`commit-message`](skills/commit-message/SKILL.md) | Drafts a Conventional Commits message from the staged diff. |
 | [`code-review-checklist`](skills/code-review-checklist/SKILL.md) | Reviews a diff for correctness, security, and maintainability issues. |
+
+Two skills weren't ported over — `docx`, `pdf`, `pptx`, and `xlsx` are Anthropic's official skills but are licensed "Proprietary — © Anthropic, PBC," and that license explicitly forbids extracting, copying, or redistributing them outside Anthropic's own services. Committing them into this repo would violate that license, so they're intentionally excluded. Everything else here (`canvas-design`, `learn`, `skill-creator`) carries a permissive Apache-2.0 license, and the rest have no license restriction at all.
+
+A couple of the included skills lean on Claude-specific integrations — `notebooklm` drives the Claude-in-Chrome browser extension, and `morning`/`skill-creator` reference Claude Code's scheduled-task and subagent features. The `SKILL.md` instructions will still load fine in Gemini CLI or Antigravity, but those particular capabilities may not have an equivalent there.
 
 ## Installing
 
