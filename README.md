@@ -87,10 +87,13 @@ Without it, `analyze-report` still works — it just skips the 1h timeframe and 
 ## Installing
 
 **Claude Code**
-```bash
-claude plugin install <this-repo-path-or-url>
+
+This repo is its own marketplace (`.claude-plugin/marketplace.json`), so install it in two steps from within Claude Code:
 ```
-Or clone it into `.claude/skills/` / add it as a marketplace plugin — see the [Claude Code plugins docs](https://code.claude.com/docs/en/plugins).
+/plugin marketplace add quyenanh198/skills
+/plugin install multi-ai-skills@multi-ai-skills
+```
+Or clone it into `.claude/skills/` for a local, non-plugin install — see the [Claude Code plugins docs](https://code.claude.com/docs/en/plugins).
 
 **Gemini CLI**
 ```bash
