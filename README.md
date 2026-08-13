@@ -62,6 +62,7 @@ All three manifests point at the same `skills/` directory — no content is dupl
 | [`divergent-thinking`](skills/divergent-thinking/SKILL.md) | Open-ended ideation: a wide spread of distinct options on a problem, breadth before evaluation. |
 | [`fiction-writing`](skills/fiction-writing/SKILL.md) | Narrative prose support — scene structure, character voice, pacing, dialogue that avoids exposition-dumping. |
 | [`analyze-report`](skills/analyze-report/SKILL.md) | Multi-timeframe technical analysis and week/quarter/year change report for any stock (`Analyze-Report <ticker>`). Generalized from the synced `spy-entry-analysis` skill — rebuilt on the connected market-data tools instead of web scraping, and no longer limited to SPY. |
+| [`chinese-via-hanviet`](skills/chinese-via-hanviet/SKILL.md) | Teaches Mandarin to a Vietnamese speaker by bridging through Hán-Việt readings where that helps, and flagging false friends where it doesn't. Includes a starter vocabulary and a pronunciation/grammar primer under `references/`. |
 
 Two skills weren't ported over — `docx`, `pdf`, `pptx`, and `xlsx` are Anthropic's official skills but are licensed "Proprietary — © Anthropic, PBC," and that license explicitly forbids extracting, copying, or redistributing them outside Anthropic's own services. Committing them into this repo would violate that license, so they're intentionally excluded. Everything else here (`canvas-design`, `learn`, `skill-creator`) carries a permissive Apache-2.0 license, and the rest have no license restriction at all.
 
