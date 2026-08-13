@@ -18,6 +18,8 @@ All three manifests point at the same `skills/` directory — no content is dupl
 
 ## Skills included
 
+**Synced from claude.ai account**
+
 | Skill | Description |
 |---|---|
 | [`canvas-design`](skills/canvas-design/SKILL.md) | Creates visual art/posters as .png or .pdf from a design philosophy. |
@@ -32,9 +34,44 @@ All three manifests point at the same `skills/` directory — no content is dupl
 | [`commit-message`](skills/commit-message/SKILL.md) | Drafts a Conventional Commits message from the staged diff. |
 | [`code-review-checklist`](skills/code-review-checklist/SKILL.md) | Reviews a diff for correctness, security, and maintainability issues. |
 
+**Token efficiency, from [caveman](https://github.com/juliusbrussee/caveman) (MIT-licensed)**
+
+| Skill | Description |
+|---|---|
+| [`caveman`](skills/caveman/SKILL.md) | Ultra-compressed communication mode. Auto-activated every Claude Code session — see [Hooks](#hooks). |
+| [`caveman-commit`](skills/caveman-commit/SKILL.md) | Compressed, Conventional-Commits-format commit messages. |
+| [`caveman-compress`](skills/caveman-compress/SKILL.md) | Compresses natural-language memory files (e.g. `CLAUDE.md`) to save input tokens; keeps a `.original.md` backup. |
+| [`caveman-explore`](skills/caveman-explore/SKILL.md) | Read-only repository explorer; returns compact `path:line` citations instead of dumping file contents into context. |
+| [`caveman-review`](skills/caveman-review/SKILL.md) | Ultra-compressed PR review comments — one line per issue: location, problem, fix. |
+
+**Coding workflow, from caveman (MIT-licensed)**
+
+| Skill | Description |
+|---|---|
+| [`investigate-first`](skills/investigate-first/SKILL.md) | Diagnose ambiguous failures with evidence-ranked hypotheses before editing anything. |
+| [`lean-build`](skills/lean-build/SKILL.md) | Build new feature work with strict scope and an explicit stop condition — anti-overbuilding. |
+| [`migration`](skills/migration/SKILL.md) | Reversible, compatibility-safe schema/API/config/dependency migrations. |
+| [`safe-refactor`](skills/safe-refactor/SKILL.md) | Restructure code while preserving behavior; verification brackets the structural edit. |
+| [`surgical-patch`](skills/surgical-patch/SKILL.md) | Fix bugs at the narrowest responsible layer, with regression proof. |
+| [`verify-and-stop`](skills/verify-and-stop/SKILL.md) | Prove existing work meets acceptance criteria without expanding scope. |
+
+**Original**
+
+| Skill | Description |
+|---|---|
+| [`review-and-test`](skills/review-and-test/SKILL.md) | Reviews a diff/file for real bugs, then writes a failing TDD-style test for each confirmed gap — no auto-fix. |
+| [`divergent-thinking`](skills/divergent-thinking/SKILL.md) | Open-ended ideation: a wide spread of distinct options on a problem, breadth before evaluation. |
+| [`fiction-writing`](skills/fiction-writing/SKILL.md) | Narrative prose support — scene structure, character voice, pacing, dialogue that avoids exposition-dumping. |
+
 Two skills weren't ported over — `docx`, `pdf`, `pptx`, and `xlsx` are Anthropic's official skills but are licensed "Proprietary — © Anthropic, PBC," and that license explicitly forbids extracting, copying, or redistributing them outside Anthropic's own services. Committing them into this repo would violate that license, so they're intentionally excluded. Everything else here (`canvas-design`, `learn`, `skill-creator`) carries a permissive Apache-2.0 license, and the rest have no license restriction at all.
 
+The caveman-derived skills above are a subset of the 20 skills in that repo's `skills/` directory (which is MIT-licensed, distinct from the compression engine's BSL-1.1 license). Nine were left out — `cavecrew`, `caveman-discover`, `caveman-evidence-review`, `caveman-help`, `caveman-learn`, `caveman-manage`, `caveman-optimize`, `caveman-setup`, `caveman-stats` — because they depend on the Caveman Cloud gateway, its CLI login, or its own subagents, none of which exist outside that project.
+
 A couple of the included skills lean on Claude-specific integrations — `notebooklm` drives the Claude-in-Chrome browser extension, and `morning`/`skill-creator` reference Claude Code's scheduled-task and subagent features. The `SKILL.md` instructions will still load fine in Gemini CLI or Antigravity, but those particular capabilities may not have an equivalent there.
+
+## Hooks
+
+`hooks/session-start-caveman.sh` is a **Claude Code-only** extra (not part of the portable Agent Skills spec — Gemini CLI and Antigravity don't read `hooks/`). It runs on every `SessionStart` and instructs the assistant to invoke the `caveman` skill before its first response, so compressed-output mode is on by default in Claude Code. Say "stop caveman" or "normal mode" in a session to turn it off for that session. On other hosts, `caveman` still works — it just has to be invoked manually (e.g. "caveman mode").
 
 ## Installing
 
