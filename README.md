@@ -27,7 +27,6 @@ All three manifests point at the same `skills/` directory — no content is dupl
 | [`skill-creator`](skills/skill-creator/SKILL.md) | Creates and iteratively improves other skills, including running evals. |
 | [`morning`](skills/morning/SKILL.md) | Renders a personal morning brief as a styled HTML artifact. |
 | [`notebooklm`](skills/notebooklm/SKILL.md) | Drives NotebookLM via browser automation (reading, adding sources, Studio outputs). |
-| [`spy-entry-analysis`](skills/spy-entry-analysis/SKILL.md) | Multi-timeframe technical analysis for $SPY entry points. |
 | [`webnovel-planning`](skills/webnovel-planning/SKILL.md) | Plans webnovel structure, world-building, and characters. |
 | [`webnovel-writer`](skills/webnovel-writer/SKILL.md) | Writes full webnovel chapters from planning documents. |
 | [`skill-core-webnovel-writing`](skills/skill-core-webnovel-writing/SKILL.md) | Core webnovel prose-writing fundamentals and rules. |
@@ -62,6 +61,7 @@ All three manifests point at the same `skills/` directory — no content is dupl
 | [`review-and-test`](skills/review-and-test/SKILL.md) | Reviews a diff/file for real bugs, then writes a failing TDD-style test for each confirmed gap — no auto-fix. |
 | [`divergent-thinking`](skills/divergent-thinking/SKILL.md) | Open-ended ideation: a wide spread of distinct options on a problem, breadth before evaluation. |
 | [`fiction-writing`](skills/fiction-writing/SKILL.md) | Narrative prose support — scene structure, character voice, pacing, dialogue that avoids exposition-dumping. |
+| [`analyze-report`](skills/analyze-report/SKILL.md) | Multi-timeframe technical analysis and week/quarter/year change report for any stock (`Analyze-Report <ticker>`). Generalized from the synced `spy-entry-analysis` skill — rebuilt on the connected market-data tools instead of web scraping, and no longer limited to SPY. |
 
 Two skills weren't ported over — `docx`, `pdf`, `pptx`, and `xlsx` are Anthropic's official skills but are licensed "Proprietary — © Anthropic, PBC," and that license explicitly forbids extracting, copying, or redistributing them outside Anthropic's own services. Committing them into this repo would violate that license, so they're intentionally excluded. Everything else here (`canvas-design`, `learn`, `skill-creator`) carries a permissive Apache-2.0 license, and the rest have no license restriction at all.
 
