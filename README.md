@@ -26,7 +26,7 @@ All three manifests point at the same `skills/` directory — no content is dupl
 | [`learn`](skills/learn/SKILL.md) | Teaches concepts for understanding, not task completion — explanations, ELI5, quizzing. |
 | [`skill-creator`](skills/skill-creator/SKILL.md) | Creates and iteratively improves other skills, including running evals. |
 | [`morning`](skills/morning/SKILL.md) | Renders a personal morning brief as a styled HTML artifact. |
-| [`notebooklm`](skills/notebooklm/SKILL.md) | Drives NotebookLM via browser automation (reading, adding sources, Studio outputs). |
+| [`notebooklm`](skills/notebooklm/SKILL.md) | Drives NotebookLM/Gemini Notebook via browser automation — reading, adding sources, autonomous research (Deep/Fast Research, Discover), Studio outputs (incl. Data Tables, Flashcards, Video Overview), and sharing/collaboration. |
 | [`webnovel-planning`](skills/webnovel-planning/SKILL.md) | Plans webnovel structure, world-building, and characters. |
 | [`webnovel-writer`](skills/webnovel-writer/SKILL.md) | Writes full webnovel chapters from planning documents. |
 | [`skill-core-webnovel-writing`](skills/skill-core-webnovel-writing/SKILL.md) | Core webnovel prose-writing fundamentals and rules. |
