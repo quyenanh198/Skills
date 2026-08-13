@@ -73,6 +73,16 @@ A couple of the included skills lean on Claude-specific integrations — `notebo
 
 `hooks/session-start-caveman.sh` is a **Claude Code-only** extra (not part of the portable Agent Skills spec — Gemini CLI and Antigravity don't read `hooks/`). It runs on every `SessionStart` and instructs the assistant to invoke the `caveman` skill before its first response, so compressed-output mode is on by default in Claude Code. Say "stop caveman" or "normal mode" in a session to turn it off for that session. On other hosts, `caveman` still works — it just has to be invoked manually (e.g. "caveman mode").
 
+## Setup
+
+`analyze-report`'s 1h timeframe needs a free [Twelve Data](https://twelvedata.com/) API key (the primary market-data connector's intraday endpoints are gated on its current tier). Create a `.env` file at the repo root — **it's git-ignored, never commit it**:
+
+```
+TWELVE_DATA_API_KEY=your_key_here
+```
+
+Without it, `analyze-report` still works — it just skips the 1h timeframe and reports daily + weekly only.
+
 ## Installing
 
 **Claude Code**

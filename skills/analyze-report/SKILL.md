@@ -1,6 +1,6 @@
 ---
 name: analyze-report
-description: Builds a multi-timeframe technical analysis and change report for any publicly traded stock — current snapshot, entry-point read across 15-minute/60-minute/daily/weekly charts, and what's changed since last week/quarter/year. Triggers on "Analyze-Report <ticker or company name>", "check <ticker>", "how does <ticker> look", "<ticker> entry point", or any near-identical request for a single-stock technical read.
+description: Builds a multi-timeframe technical analysis and change report for any publicly traded stock — current snapshot, entry-point read across 1-hour/daily/weekly charts, and what's changed since last week/quarter/year. Triggers on "Analyze-Report <ticker or company name>", "check <ticker>", "how does <ticker> look", "<ticker> entry point", or any near-identical request for a single-stock technical read.
 ---
 
 # Stock Multi-Timeframe Entry & Change Report
@@ -8,7 +8,7 @@ description: Builds a multi-timeframe technical analysis and change report for a
 ## Purpose
 
 Produce a technical-analysis write-up for a single stock: a real-time snapshot,
-a multi-timeframe read (15min, 60min, daily, weekly) on whether current
+a multi-timeframe read (1h, daily, weekly) on whether current
 conditions look like a reasonable entry, and a summary of what's changed since
 last week, last quarter, and last year. This skill produces **informational
 technical analysis**, not a trade recommendation — the framing and disclaimers
@@ -20,6 +20,17 @@ Accepts a ticker or a company name, e.g. `Analyze-Report AAPL`,
 `Analyze-Report Microsoft`. If a company name is given, resolve it to a
 ticker first (step 0) rather than guessing.
 
+## Configuration
+
+The 1h timeframe uses Twelve Data instead of the primary market-data tools
+(their intraday endpoints are gated on this connector's tier — see Known
+limitations). It requires a free Twelve Data API key, stored as
+`TWELVE_DATA_API_KEY` in a `.env` file at the plugin root — **never commit
+this file** (it's covered by `.gitignore`). Run
+`scripts/twelvedata_1h.sh <SYMBOL>` to fetch it; if the key is missing or the
+script fails, skip the 1h timeframe, note it as unavailable in the report,
+and continue with daily + weekly.
+
 ## Language
 
 Write the final output in Vietnamese, regardless of what language the
@@ -29,13 +40,14 @@ prose, headers, and explanations into Vietnamese.
 
 ## Data source discipline
 
-Prefer the connected market-data tools (Alpha Vantage-backed) over web
-search — they return exact computed values instead of scraped/approximate
-ones, and don't have the reliability problems of pulling numbers out of
-JS-rendered dashboards. Request `datatype: "json"` on every call (the tools
-default to CSV, and JSON is far less error-prone to parse). Use web
-search/fetch only for things the data tools don't cover: same-day macro
-catalysts, sector context, or when a tool call fails.
+Prefer the connected market-data tools (Alpha Vantage-backed, plus Twelve
+Data for 1h — see Configuration) over web search — they return exact
+computed values instead of scraped/approximate ones, and don't have the
+reliability problems of pulling numbers out of JS-rendered dashboards.
+Request `datatype: "json"` on every Alpha Vantage call (the tools default to
+CSV, and JSON is far less error-prone to parse). Use web search/fetch only
+for things the data tools don't cover: same-day macro catalysts, sector
+context, or when a tool call fails.
 
 This skill analyzes price/volume data and computed indicator values — it
 does **not** relay other people's trading opinions, calls, or predictions.
@@ -69,17 +81,23 @@ of guessing.
 
 ### 2. Per-timeframe technical read
 
-For each of **15min, 60min, daily, weekly**, pull:
-- Price series: `TIME_SERIES_INTRADAY` (interval `15min`/`60min`) or
-  `TIME_SERIES_DAILY_ADJUSTED` / `TIME_SERIES_WEEKLY_ADJUSTED` — use
-  adjusted series so splits/dividends don't distort the trend read.
-- `RSI` (`time_period: 14`, `series_type: close`) at that interval.
-- `MACD` (defaults: fast 12 / slow 26 / signal 9, `series_type: close`) at
-  that interval.
-- `OBV` at that interval, and `MFI` at that interval with `time_period: 14`,
-  for volume/money-flow confirmation.
-- For intraday intervals, pass `month` as the current `YYYY-MM` so the
-  latest data is included.
+**Daily and weekly** (primary market-data tools):
+- Price series: `TIME_SERIES_DAILY` (outputsize `compact` is enough for
+  trend/level context — `_ADJUSTED` is gated on this connector) and
+  `TIME_SERIES_WEEKLY_ADJUSTED`.
+- `RSI` (`time_period: 14`, `series_type: close`) at `daily` and `weekly`.
+- `OBV` and `MFI` (`time_period: 14`) at `daily` and `weekly`, for
+  volume/money-flow confirmation.
+- `MACD` is unreliable on this connector (fails at every interval on the
+  current tier) — treat it as best-effort: try it, but don't block the
+  report or call out its absence if it fails.
+
+**1h** (Twelve Data — see Configuration):
+- Run `scripts/twelvedata_1h.sh <SYMBOL>`, which returns `time_series`,
+  `rsi`, `mfi`, and `obv` at `1h` in one call.
+- If the script fails (missing key, rate limit, etc.), skip this timeframe
+  entirely rather than guessing values — note it as unavailable in the
+  final report.
 
 Note per timeframe:
 - **Trend**: up/down/sideways, and price relative to recent price structure
@@ -96,11 +114,11 @@ Note per timeframe:
 The goal is to find where a good entry point exists, not to require every
 timeframe to agree:
 - Evaluate each timeframe's setup independently first — a clean setup on
-  one timeframe (e.g. 60min pulling into a well-defended support with
+  one timeframe (e.g. 1h pulling into a well-defended support with
   rising money flow) is a valid finding even if daily/weekly don't show the
   same clarity.
 - Then note where timeframes reinforce or conflict (e.g. "good short-term
-  60min entry, but daily trend still down — favors a short hold over a
+  1h entry, but daily trend still down — favors a short hold over a
   swing"). Lack of full alignment doesn't by itself disqualify an entry;
   state plainly which timeframe(s) the case is strongest on and why.
 - Is price near a key level? Is momentum/money flow confirming or
@@ -109,15 +127,25 @@ timeframe to agree:
 
 ### 4. What's changed since last week / quarter / year
 
-Using `TIME_SERIES_DAILY_ADJUSTED` (`outputsize: full`), compare current
-price/conditions against the close from ~5 trading days ago (last week),
-~63 trading days ago (last quarter), and ~252 trading days ago (last year):
-- % price change over each horizon.
-- Whether the broader trend/regime changed (e.g. "was below the 50-day
-  average a quarter ago, now above it") — not a re-run of the full
-  per-timeframe breakdown, just the headline shift.
+Use `TIME_SERIES_WEEKLY_ADJUSTED` for this — `TIME_SERIES_DAILY_ADJUSTED`
+with `outputsize: full` is gated on this connector (confirmed: even plain
+`TIME_SERIES_DAILY` at `outputsize: full` fails), while the weekly adjusted
+series returns full history and is not gated. Compare current price against
+the **adjusted close** ~1 week back, ~13 weeks back (last quarter), and ~52
+weeks back (last year):
+- % price change over each horizon, computed from **adjusted** close only —
+  a stock split between now and the anchor date will silently produce a
+  wildly wrong % change (e.g. ~2x off) if raw close is used instead.
+- Whether the broader trend/regime changed — compare weekly RSI/MFI at each
+  anchor point against current (e.g. "RSI was in overbought territory a
+  quarter ago, is neutral now") rather than re-running the full
+  per-timeframe breakdown.
 - Whether volume trend shifted materially (persistently higher/lower
   average volume than the prior period).
+- The response for `TIME_SERIES_WEEKLY_ADJUSTED` is large enough to exceed
+  inline token limits — expect a truncated preview pointing to a saved file
+  or `return_full_data: true`; extract only the specific anchor-week entries
+  needed rather than loading the whole series into context.
 - If a horizon isn't available (e.g. a recent IPO with no 1-year history),
   say so rather than omitting it silently.
 
@@ -134,7 +162,7 @@ price/conditions against the close from ~5 trading days ago (last week),
 Structure:
 1. **Snapshot** — current price, today's context, entitlement (real-time vs.
    delayed), sector/market cap, any upcoming earnings date
-2. **Per-timeframe breakdown** — 15min, 60min, daily, weekly: trend / key
+2. **Per-timeframe breakdown** — 1h, daily, weekly: trend / key
    levels / momentum / money flow
 3. **Timeframe comparison** — where the entry case is strongest and why,
    and where timeframes reinforce or conflict
@@ -165,14 +193,23 @@ This skill touches financial decision-making. Every output MUST:
 
 ## Known limitations
 
-- No native 4-hour bar exists in the connected data source — 60min and
-  daily are used instead of a synthetic/resampled 4h candle, so indicator
-  values stay exact rather than approximated.
-- Rate limits apply to the data connector; if a call fails or is
+- No native 4-hour bar exists in either connected data source — 1h, daily,
+  and weekly are used instead of a synthetic/resampled 4h candle, so
+  indicator values stay exact rather than approximated.
+- Genuinely real-time data isn't available on any free-tier source checked
+  (Alpha Vantage, Finnhub, Twelve Data, Polygon/Massive) — every one of them
+  delays US equity quotes by 15 minutes to several hours on their free
+  plans. `GLOBAL_QUOTE` returns delayed data on this connector; always
+  state that plainly rather than presenting it as live.
+- `TIME_SERIES_INTRADAY` and `TIME_SERIES_DAILY_ADJUSTED` are gated on this
+  connector's current tier — `TIME_SERIES_DAILY` (unadjusted, compact) is
+  used for the daily timeframe instead, and 1h comes from Twelve Data
+  entirely (see Configuration).
+- `MACD` fails on this connector regardless of interval — treated as
+  best-effort, not required for the report.
+- Rate limits apply to both data connectors; if a call fails or is
   rate-limited, say so in the relevant section rather than silently
   omitting it or inferring a number.
-- `GLOBAL_QUOTE` may return delayed rather than real-time data depending on
-  entitlement — always state which was returned.
 
 ## Notes on scheduling
 
