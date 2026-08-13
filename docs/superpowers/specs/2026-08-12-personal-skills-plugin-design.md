@@ -22,9 +22,14 @@ publication or multi-user distribution — a private toolkit.
   explicitly deferred — not worth the overhead for a personal, single-tool
   plugin. Revisit only if maintaining duplicate skill copies across tools
   becomes a real pain.
-- **No marketplace.json.** Distribution is local-only (add the directory
-  directly as a plugin); marketplace packaging is for publishing to a
-  marketplace repo, which isn't a goal here.
+- **No marketplace.json (superseded).** Originally distribution was
+  local-only (add the directory directly as a plugin). This turned out to
+  block `/plugin marketplace add` / `/plugin install`, which require a
+  `.claude-plugin/marketplace.json` to discover installable plugins from a
+  repo URL — the plugin manifest alone isn't enough. A self-referencing
+  `marketplace.json` (`source: "./"`) was added later so the repo can
+  install itself via the standard marketplace flow; see
+  [`.claude-plugin/marketplace.json`](../../../.claude-plugin/marketplace.json).
 - **Flat skill namespace.** Claude Code requires skill names to be unique
   at the plugin level; skills are not nested under per-domain folders.
   Domain grouping (coding / brainstorming / writing / token-efficiency) is
@@ -121,5 +126,7 @@ canon before writing.
 ## Explicitly out of scope for v1
 
 - Cross-tool adapters (Gemini, Codex, etc.) generated from a shared source.
-- `marketplace.json` / publishing for others to install.
+- `marketplace.json` for others to install — added on 2026-08-13 for a
+  different reason (installability, not multi-plugin publishing); still no
+  goal to host third-party plugins in this marketplace.
 - Any skill beyond the 14 listed above.

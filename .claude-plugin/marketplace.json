@@ -1,0 +1,23 @@
+{
+  "name": "multi-ai-skills",
+  "owner": {
+    "name": "quyenanh198"
+  },
+  "metadata": {
+    "description": "Marketplace for the multi-ai-skills plugin — a portable set of Agent Skills for Claude Code, Gemini CLI, and Google Antigravity.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "multi-ai-skills",
+      "source": "./",
+      "description": "A portable set of Agent Skills that work across Claude Code, Gemini CLI, Google Antigravity, and other Agent Skills-compatible AI tools.",
+      "version": "0.1.0",
+      "author": {
+        "name": "quyenanh198"
+      },
+      "homepage": "https://github.com/quyenanh198/skills",
+      "license": "MIT"
+    }
+  ]
+}
