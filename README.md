@@ -106,8 +106,6 @@ This can't be committed to the repo — it has to be pasted into that environmen
 
 Note on `extraKnownMarketplaces`: its shape is an object keyed by marketplace name, each value a `{ "source": { "source": "github", "repo": "owner/repo" } }` declaration — `claude doctor` (run without needing to trust the folder) will flag it as invalid and silently ignore it if that shape is off, which is an easy way to end up with "installed but not loading" and no visible error.
 
-Note on `extraKnownMarketplaces`: its shape is an object keyed by marketplace name, each value a `{ "source": { "source": "github", "repo": "owner/repo" } }` declaration — `claude doctor` (run without needing to trust the folder) will flag it as invalid and silently ignore it if that shape is off, which is an easy way to end up with "installed but not loading" and no visible error.
-
 Or clone it into `.claude/skills/` for a local, non-plugin install — see the [Claude Code plugins docs](https://code.claude.com/docs/en/plugins).
 
 **Gemini CLI**
@@ -117,7 +115,11 @@ gemini extensions install <this-repo-url>
 See the [Gemini CLI extensions docs](https://geminicli.com/docs/extensions/).
 
 **Google Antigravity**
-Clone or symlink this repo into your Antigravity plugins directory. See the [Antigravity plugins docs](https://antigravity.google/docs/plugins).
+Install via Antigravity's plugin manager (Add plugin → paste this repo's URL), or clone this repo into your Antigravity plugins directory — **don't symlink it**: Antigravity's skill scanner has a [known bug](https://github.com/vercel-labs/skills/issues/633) where it doesn't follow symlinks (`readdir` without resolving symlinked entries), so a symlinked plugin shows as installed/enabled but loads zero skills, silently, with no error. A real directory (clone or copy) doesn't hit this.
+
+If the plugin shows Enabled with no error but skills still don't trigger, that also matches a second known issue: Antigravity's skill-discovery path has been inconsistent across versions/tools ([google/agents-cli#26](https://github.com/google/agents-cli/issues/26) — docs, global config, and what installers actually write to disk have disagreed on `.agents/skills/` vs `~/.gemini/config/skills/` vs `~/.gemini/antigravity/skills/`). To hedge against auto-discovery not working, the root `plugin.json` lists every skill explicitly under a `"skills"` array (path to each `SKILL.md`) rather than relying only on the `skills/` directory being scanned — untested against a real Antigravity instance (none was available to verify against), so treat it as a likely-helpful hedge, not a confirmed fix. See the [Antigravity plugins docs](https://antigravity.google/docs/plugins).
+
+If it's still not loading after that: `agy inspect` (if you have the CLI) shows what context Antigravity is actually working with, and `~/.gemini/antigravity-cli/log/cli-*.log` is the first place to check for a discovery-side error.
 
 ## Adding a new skill
 
