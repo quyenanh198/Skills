@@ -93,6 +93,10 @@ This repo is its own marketplace (`.claude-plugin/marketplace.json`), so install
 /plugin marketplace add quyenanh198/skills
 /plugin install multi-ai-skills@multi-ai-skills
 ```
+That installs to **user scope** (your machine only) — it won't be picked up by Claude Code web/cloud sessions or teammates who clone the repo, and it only takes effect on your *next* session (a plugin installed mid-session doesn't load until you restart).
+
+`.claude/settings.json` in this repo also self-declares the plugin (`extraKnownMarketplaces` + `enabledPlugins`) so that Claude Code web and cloud sessions opened on this repo pick it up automatically, without a manual `/plugin install`. Note the `extraKnownMarketplaces` shape is an object keyed by marketplace name, each value a `{ "source": { "source": "github", "repo": "owner/repo" } }` declaration — `claude doctor` (run without needing to trust the folder) will flag it as invalid and silently ignore it if that shape is off, which is an easy way to end up with "installed but not loading" and no visible error.
+
 Or clone it into `.claude/skills/` for a local, non-plugin install — see the [Claude Code plugins docs](https://code.claude.com/docs/en/plugins).
 
 **Gemini CLI**

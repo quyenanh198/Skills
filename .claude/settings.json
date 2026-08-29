@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "multi-ai-skills": {
+      "source": {
+        "source": "github",
+        "repo": "quyenanh198/Skills"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "multi-ai-skills@multi-ai-skills": true
+  }
+}
